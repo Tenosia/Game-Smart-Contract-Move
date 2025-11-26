@@ -8,17 +8,12 @@ module woolf_deployer::token_helper {
 
     use aptos_framework::timestamp;
     use std::string::{Self, String};
-    // use std::vector;
-    // use woolf_deployer::config;
     use aptos_token::token::{Self, TokenDataId, TokenId};
-    // use aptos_token::property_map;
     use std::option;
     use std::signer;
-    // use std::debug;
     use aptos_framework::account::{Self, SignerCapability};
     use woolf_deployer::config;
     use woolf_deployer::utf8_utils;
-    // use aptos_framework::reconfiguration::last_reconfiguration_time;
 
     /// The collection does not exist. This should never happen.
     const ECOLLECTION_NOT_EXISTS: u64 = 1;

@@ -9,7 +9,6 @@ module woolf_deployer::woolf {
     use aptos_framework::aptos_coin::AptosCoin;
     use aptos_framework::coin;
     use aptos_framework::event::EventHandle;
-    // use aptos_framework::timestamp;
     use aptos_token::token::{Self, TokenDataId, Token};
 
     use woolf_deployer::barn;
@@ -24,7 +23,7 @@ module woolf_deployer::woolf {
     /// The Naming Service contract is not enabled
     const ENOT_ENABLED: u64 = 1;
     /// Action not authorized because the signer is not the owner of this module
-    const ENOT_AUTHORIZED: u64 = 1;
+    const ENOT_AUTHORIZED: u64 = 2;
     /// The collection minting is disabled
     const EMINTING_DISABLED: u64 = 3;
     /// All minted
@@ -109,12 +108,15 @@ module woolf_deployer::woolf {
     public fun mint_cost(token_index: u64): u64 {
         if (token_index <= config::paid_tokens()) {
             return 0
-        } else if (token_index <= config::max_tokens() * 2 / 5) {
-            return 20000 * config::octas()
-        } else if (token_index <= config::max_tokens() * 4 / 5) {
-            return 40000 * config::octas()
         };
-        80000 * config::octas()
+        let max_tokens = config::max_tokens();
+        let octas = config::octas();
+        if (token_index <= max_tokens * 2 / 5) {
+            return 20000 * octas
+        } else if (token_index <= max_tokens * 4 / 5) {
+            return 40000 * octas
+        };
+        80000 * octas
     }
 
     fun issue_token(_receiver: &signer, token_index: u64, t: SheepWolf): Token {
@@ -175,27 +177,24 @@ module woolf_deployer::woolf {
 
         let total_wool_cost: u64 = 0;
         let tokens: vector<Token> = vector::empty<Token>();
-        let seed: vector<u8>;
+        let mut current_index = token_supply;
         let i = 0;
         while (i < amount) {
-            seed = random::seed(&receiver_addr);
-            let token_index = token_helper::collection_supply() + 1; // from 1
+            current_index = current_index + 1;
+            let token_index = current_index;
+            let seed = random::seed(&receiver_addr);
             let sheep_wolf_traits = generate_traits(seed);
             let token = issue_token(receiver, token_index, sheep_wolf_traits);
-            // let token_id = token::get_token_id(&token);
-            // debug::print(&token_id);
             let recipient: address = select_recipient(receiver_addr, seed, token_index);
             if (!stake || recipient != receiver_addr) {
                 token::direct_deposit_with_opt_in(recipient, token);
             } else {
                 vector::push_back(&mut tokens, token);
             };
-            // wool cost
             total_wool_cost = total_wool_cost + mint_cost(token_index);
             i = i + 1;
         };
         if (total_wool_cost > 0) {
-            // burn WOOL
             wool::register_coin(receiver);
             assert!(coin::balance<wool::Wool>(receiver_addr) >= total_wool_cost, error::invalid_state(EINSUFFICIENT_WOOL_BALANCE));
             wool::burn(receiver, total_wool_cost);
