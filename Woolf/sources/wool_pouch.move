@@ -165,15 +165,14 @@ module woolf_deployer::wool_pouch {
 
     // the amount of WOOL currently available to claim in a WOOL pouch
     public fun amount_available(token_id: u64): u64 acquires Data {
-        let data = borrow_global_mut<Data>(@woolf_deployer);
+        let data = borrow_global<Data>(@woolf_deployer);
         amount_available_internal(data, token_id)
     }
 
     // the amount of WOOL currently available to claim in a WOOL pouch
-    fun amount_available_internal(data: &mut Data, token_id: u64): u64 {
-        // let data = borrow_global_mut<Data>(@woolf_deployer);
+    fun amount_available_internal(data: &Data, token_id: u64): u64 {
         assert!(table::contains(&data.pouches, token_id), error::not_found(EPOUCH_NOT_FOUND));
-        let pouch = table::borrow_mut(&mut data.pouches, token_id);
+        let pouch = table::borrow(&data.pouches, token_id);
         let current_timestamp = timestamp::now_seconds();
         if (current_timestamp > pouch.start_timestamp + pouch.duration * ONE_DAY_IN_SECONDS) {
             current_timestamp = pouch.start_timestamp + pouch.duration * ONE_DAY_IN_SECONDS;

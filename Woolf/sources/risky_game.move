@@ -128,9 +128,10 @@ module woolf_deployer::risky_game {
         if (stage == STAGE_OPT_IN) {
             assert!(data.stage == STAGE_NOT_STARTED, error::invalid_state(EGAME_STAGE_ERROR));
             data.start_time = timestamp::now_seconds();
-            data.stage == STAGE_OPT_IN;
+            data.stage = STAGE_OPT_IN;
         } else if (stage == STAGE_EXECUTE) {
             assert!(data.stage == STAGE_OPT_IN, error::invalid_state(EGAME_STAGE_ERROR));
+            data.stage = STAGE_EXECUTE;
         };
     }
 
@@ -379,7 +380,7 @@ module woolf_deployer::risky_game {
     }
 
     // gets the WOOL due for a Sheep based on their state before Barn v1 was paused
-    fun get_wool_due(data: &mut Data, token_index: u64): u64 {
+    fun get_wool_due(data: &Data, token_index: u64): u64 {
         let token_id = get_token_id(token_index);
         if (barn::sheep_in_barn(token_id)) {
             // Sheep that were staked earn all their earnings up until the risky game

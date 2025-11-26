@@ -4,7 +4,6 @@ module woolf_deployer::traits {
     use std::vector;
     use std::bcs;
     use std::hash;
-    // use std::debug;
     use aptos_std::table::Table;
     use aptos_std::table;
     use aptos_token::token::{Self, TokenId};
@@ -203,7 +202,7 @@ module woolf_deployer::traits {
         // _token_owner: address,
         token_index: u64
     ): (bool, u8, u8, u8, u8, u8, u8, u8, u8, u8) acquires Data {
-        let data = borrow_global_mut<Data>(@woolf_deployer);
+        let data = borrow_global<Data>(@woolf_deployer);
         assert!(table::contains(&data.index_traits, token_index), error::not_found(ETOKEN_NOT_FOUND));
         let traits = table::borrow(&data.index_traits, token_index);
 

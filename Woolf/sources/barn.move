@@ -3,14 +3,12 @@ module woolf_deployer::barn {
     use std::error;
     use std::signer;
     use std::vector;
-    // use std::debug;
     use std::string::{Self, String};
 
     use aptos_framework::account;
     use aptos_framework::event;
     use aptos_framework::timestamp;
     use aptos_std::table::{Self, Table};
-    // use aptos_std::debug;
     use aptos_token::token::{Self, TokenId, Token};
 
     use woolf_deployer::random;
@@ -29,8 +27,6 @@ module woolf_deployer::barn {
     // sheep must have 2 days worth of $WOOL to unstake or else it's too cold
 
     const MINIMUM_TO_EXIT: u64 = 2 * 86400;
-    // TEST
-    // const MINIMUM_TO_EXIT: u64 = 600;
     const ONE_DAY_IN_SECOND: u64 = 86400;
     // wolves take a 20% tax on all $WOOL claimed
     const WOOL_CLAIM_TAX_PERCENTAGE: u64 = 20;
@@ -324,7 +320,7 @@ module woolf_deployer::barn {
     }
 
     public fun sheep_in_barn(token_id: TokenId): bool acquires Barn {
-        let barn = borrow_global_mut<Barn>(@woolf_deployer);
+        let barn = borrow_global<Barn>(@woolf_deployer);
         table::contains(&barn.items, token_id)
     }
 

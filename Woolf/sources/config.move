@@ -35,11 +35,6 @@ module woolf_deployer::config {
     const PAID_TOKENS: u64 = 10000;
     const MAX_SINGLE_MINT: u64 = 10;
 
-    // TEST: testing config
-    // const MINT_PRICE: u64 = 100000000;
-    // const MAX_TOKENS: u64 = 200;
-    // const PAID_TOKENS: u64 = 40;
-
     //
     // Errors
     //
